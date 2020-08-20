@@ -12,12 +12,12 @@ from tqdm import tqdm
 from eval import eval_net
 from unet import UNet
 
-from torch.utils.tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
 from utils.dataset import BasicDataset
 from torch.utils.data import DataLoader, random_split
 
-dir_img = 'data/imgs/'
-dir_mask = 'data/masks/'
+dir_img = 'ISIC-2017_Training_Data/'
+dir_mask = 'ISIC-2017_Training_Part1_GroundTruth/'
 dir_checkpoint = 'checkpoints/'
 
 
