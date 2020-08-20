@@ -16,11 +16,10 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.dataset import BasicDataset
 from torch.utils.data import DataLoader, random_split
 
-'''
 dir_img = 'data/imgs/'
 dir_mask = 'data/masks/'
 dir_checkpoint = 'checkpoints/'
-'''
+
 
 def train_net(net,
               device,
@@ -29,9 +28,6 @@ def train_net(net,
               lr=0.001,
               val_percent=0.1,
               save_cp=True,
-              dir_image='data/imgs/',
-              dir_mask='data/masks/',
-              dir_checkpoint='checkpoints/',
               img_scale=0.5):
 
     dataset = BasicDataset(dir_img, dir_mask, img_scale)
@@ -68,12 +64,6 @@ def train_net(net,
         epoch_loss = 0
         with tqdm(total=n_train, desc=f'Epoch {epoch + 1}/{epochs}', unit='img') as pbar:
             for batch in train_loader:
-
-                meta_net = LeNet(n_out=1)
-                meta_net.load_state_dict(net.state_dict())
-                if torch.cuda.is_available():
-                    meta_net.cuda()
-
                 imgs = batch['image']
                 true_masks = batch['mask']
                 assert imgs.shape[1] == net.n_channels, \
@@ -81,95 +71,12 @@ def train_net(net,
                     f'but loaded images have {imgs.shape[1]} channels. Please check that ' \
                     'the images are loaded correctly.'
 
-                batch_val = next(iter(val_loader))
-                imgs_val = batch['image']
-                true_masks_val = batch['mask']    
-
                 imgs = imgs.to(device=device, dtype=torch.float32)
-                imgs_val = imgs_val.to(device=device, dtype=torch.float32)
                 mask_type = torch.float32 if net.n_classes == 1 else torch.long
                 true_masks = true_masks.to(device=device, dtype=mask_type)
-                true_masks_val = true_masks_val.to(device=device, dtype=mask_type)
-                masks_pred = meta_net(imgs) 
-                masks_pred_val = meta_net(imgs_val)
-'''
-            for i in tqdm(range(hyperparameters['num_iterations'])):
-                net.train()
-                # Line 2 get batch of data
-                image, labels = next(iter(data_loader))
-                # since validation data is small I just fixed them instead of building an iterator
-                # initialize a dummy network for the meta learning of the weights
-                meta_net = LeNet(n_out=1)
-                meta_net.load_state_dict(net.state_dict())
-
-                if torch.cuda.is_available():
-                    meta_net.cuda()
-
-                image = to_var(image, requires_grad=False)
-                labels = to_var(labels, requires_grad=False)
-
-                # Lines 4 - 5 initial forward pass to compute the initial weighted loss
-                y_f_hat  = meta_net(image)
-                cost = F.binary_cross_entropy_with_logits(y_f_hat,labels, reduce=False)
-                eps = to_var(torch.zeros(cost.size()))
-                l_f_meta = torch.sum(cost * eps)
-
-                meta_net.zero_grad()
-                
-                # Line 6 perform a parameter update
-                grads = torch.autograd.grad(l_f_meta, (meta_net.params()), create_graph=True)
-                meta_net.update_params(hyperparameters['lr'], source_params=grads)
-                
-                # Line 8 - 10 2nd forward pass and getting the gradients with respect to epsilon
-                y_g_hat = meta_net(val_data) 
-
-                
-                l_g_meta = F.binary_cross_entropy_with_logits(y_g_hat,val_labels)
-
-                grad_eps = torch.autograd.grad(l_g_meta, eps, only_inputs=True)[0]
-                
-                # Line 11 computing and normalizing the weights
-                w_tilde = torch.clamp(-grad_eps,min=0)
-                norm_c = torch.sum(w_tilde)
-
-                if norm_c != 0:
-                    w = w_tilde / norm_c
-                else:
-                    w = w_tilde
-
-                # Lines 12 - 14 computing for the loss with the computed weights
-                # and then perform a parameter update
-                y_f_hat = net(image)
-                cost = F.binary_cross_entropy_with_logits(y_f_hat, labels, reduce=False)
-                l_f = torch.sum(cost * w)
-
-                opt.zero_grad()
-                l_f.backward()
-                opt.step()
-'''
-                               
-                loss = criterion(masks_pred, true_masks)
-                eps = torch.zeros(loss.size())
-                l_f_meta = torch.sum(loss * eps)
-                meta_net.zero_grad()
-
-                grads = torch.autograd.grad(l_f_meta, (meta_net.params()), create_graph=True)
-                meta_net.update_params(hyperparameters['lr'], source_params=grads)
-                l_g_meta = criterion(masks_pred_val, true_masks_val)
-                grad_eps = torch.autograd.grad(l_g_meta, eps, only_inputs=True)[0]
-
-                w_tilde = torch.clamp(-grad_eps,min=0)
-                norm_c = torch.sum(w_tilde)
-
-                if norm_c != 0:
-                    w = w_tilde / norm_c
-                else:
-                    w = w_tilde
 
                 masks_pred = net(imgs)
                 loss = criterion(masks_pred, true_masks)
-                l_f = torch.sum(loss * w)
-
                 epoch_loss += loss.item()
                 writer.add_scalar('Loss/train', loss.item(), global_step)
 
@@ -223,7 +130,7 @@ def get_args():
                         help='Number of epochs', dest='epochs')
     parser.add_argument('-b', '--batch-size', metavar='B', type=int, nargs='?', default=1,
                         help='Batch size', dest='batchsize')
-    parser.add_argument('-l', '--learning-rate', metavar='LR', type=float, nargs='?', default=0.1,
+    parser.add_argument('-l', '--learning-rate', metavar='LR', type=float, nargs='?', default=0.0001,
                         help='Learning rate', dest='lr')
     parser.add_argument('-f', '--load', dest='load', type=str, default=False,
                         help='Load model from a .pth file')
@@ -269,9 +176,6 @@ if __name__ == '__main__':
                   batch_size=args.batchsize,
                   lr=args.lr,
                   device=device,
-                  dir_image=args.dir_image,
-                  dir_mask=args.dir_mask,
-                  dir_checkpoint=args.dir_checkpoint,
                   img_scale=args.scale,
                   val_percent=args.val / 100)
     except KeyboardInterrupt:
