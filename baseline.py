@@ -103,6 +103,7 @@ def train_net(net,
                         writer.add_scalar('Loss/test', val_score, global_step)
                     else:
                         logging.info('Validation Dice Coeff: {}'.format(val_score))
+                        print('Validation Dice Coeff: ', val_score)
                         writer.add_scalar('Dice/test', val_score, global_step)
 
                     writer.add_images('images', imgs, global_step)
