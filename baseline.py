@@ -194,7 +194,7 @@ def get_args():
                         help='Downscaling factor of the images')
     parser.add_argument('-v', '--validation', dest='val', type=float, default=10.0,
                         help='Percent of the data that is used as validation (0-100)')
-    parser.add_argument('-f', '--fig-path', metavar='FP', type=str, nargs='?', default='baseline',
+    parser.add_argument('-p', '--fig-path', metavar='FP', type=str, nargs='?', default='baseline',
                         help='Fig Path', dest='figpath')
 
     return parser.parse_args()
