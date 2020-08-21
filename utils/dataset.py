@@ -4,6 +4,7 @@ import numpy as np
 from glob import glob
 import torch
 from torch.utils.data import Dataset
+from torchvision import transforms, datasets
 import logging
 from PIL import Image
 
@@ -19,6 +20,15 @@ class BasicDataset(Dataset):
         self.ids = [splitext(file)[0] for file in listdir(imgs_dir)
                     if not file.startswith('.') and file.endswith('.jpg')]
         logging.info(f'Creating dataset with {len(self.ids)} examples')
+        self.transform = transforms.Compose([ 
+               transforms.RandomHorizontalFlip(),
+               transforms.RandomRotation(degrees=90),
+               # transforms.RandomGrayscale(p=0.1),
+               transforms.RandomResizedCrop(size=224, scale=(0.3, 1.0)), 
+               # transforms.Resize([224, 224]), 
+               transforms.ToTensor(), 
+               transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[1.0, 1.0, 1.0])
+            ]) 
 
     def __len__(self):
         return len(self.ids)

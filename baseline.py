@@ -15,6 +15,12 @@ from unet import UNet
 from tensorboardX import SummaryWriter
 from utils.dataset import BasicDataset
 from torch.utils.data import DataLoader, random_split
+from dice_loss import dice_coeff
+
+import matplotlib
+import matplotlib.pyplot as plt
+import IPython
+import gc
 
 dir_img = 'ISIC-2017_Training_Data/'
 dir_mask = 'ISIC-2017_Training_Part1_GroundTruth/'
@@ -39,6 +45,9 @@ def train_net(net,
 
     writer = SummaryWriter(comment=f'LR_{lr}_BS_{batch_size}_SCALE_{img_scale}')
     global_step = 0
+    net_losses = []
+    acc_test = []
+    acc_train = []
 
     logging.info(f'''Starting training:
         Epochs:          {epochs}
@@ -61,7 +70,9 @@ def train_net(net,
 
     for epoch in range(epochs):
         net.train()
-
+        tot = 0
+        num_val = 0
+        tot_val = 0
         epoch_loss = 0
         with tqdm(total=n_train, desc=f'Epoch {epoch + 1}/{epochs}', unit='img') as pbar:
             for batch in train_loader:
@@ -77,8 +88,14 @@ def train_net(net,
                 true_masks = true_masks.to(device=device, dtype=mask_type)
 
                 masks_pred = net(imgs)
+
+                pred = torch.sigmoid(masks_pred)
+                pred = (pred > 0.5).float()
+                tot += dice_coeff(pred, true_masks).item()
+
                 loss = criterion(masks_pred, true_masks)
                 epoch_loss += loss.item()
+                net_losses.append(loss.item())
                 writer.add_scalar('Loss/train', loss.item(), global_step)
 
                 pbar.set_postfix(**{'loss (batch)': loss.item()})
@@ -91,11 +108,13 @@ def train_net(net,
                 pbar.update(imgs.shape[0])
                 global_step += 1
                 if global_step % (n_train // (10 * batch_size)) == 0:
+                    num_val += 1
                     for tag, value in net.named_parameters():
                         tag = tag.replace('.', '/')
                         writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), global_step)
                         writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), global_step)
                     val_score = eval_net(net, val_loader, device)
+                    tot_val += val_score
                     scheduler.step(val_score)
                     writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], global_step)
 
@@ -104,13 +123,27 @@ def train_net(net,
                         writer.add_scalar('Loss/test', val_score, global_step)
                     else:
                         logging.info('Validation Dice Coeff: {}'.format(val_score))
-                        print('Validation Dice Coeff: ', val_score)
+                        print('Step Validation Dice: ', val_score)
                         writer.add_scalar('Dice/test', val_score, global_step)
 
                     writer.add_images('images', imgs, global_step)
                     if net.n_classes == 1:
                         writer.add_images('masks/true', true_masks, global_step)
                         writer.add_images('masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
+
+        print('Epoch: ', epoch)
+        print('Epoch Loss: ', epoch_loss/n_train)
+        print('Train EpochDice: ', tot/n_train)
+        acc_train.append(tot/n_train)
+        writer.add_scalar('EpochDice/train', tot/n_train, epoch)
+
+        print('Val EpochDice: ', tot_val/num_val)
+        acc_test.append(tot_val/num_val)
+        writer.add_scalar('EpochDice/test', tot_val/num_val, epoch)
+        
+        path = dir_checkpoint + args.figpath + '_model.pth'
+        # path = 'baseline/' + str(args.noise_fraction) + '/model.pth'
+        torch.save(net.state_dict(), path)
 
         if save_cp:
             try:
@@ -121,6 +154,27 @@ def train_net(net,
             torch.save(net.state_dict(),
                        dir_checkpoint + f'CP_epoch{epoch + 1}.pth')
             logging.info(f'Checkpoint {epoch + 1} saved !')
+    
+    IPython.display.clear_output()
+    fig, axes = plt.subplots(1, 3, figsize=(13, 5))
+    ax1, ax2, ax3 = axes.ravel()
+
+    ax1.plot(net_losses, label='net_losses')
+    ax1.set_ylabel("Losses")
+    ax1.set_xlabel("Iteration")
+    ax1.legend()
+
+    ax2.plot(acc_train, label='acc_train')
+    ax2.set_ylabel('Accuracy/train')
+    ax2.set_xlabel('Epoch')
+    ax2.legend()
+
+    ax3.plot(acc_test, label='acc_test')
+    ax3.set_ylabel('Accuracy/test')
+    ax3.set_xlabel('Epoch')
+    ax3.legend()
+
+    plt.savefig(args.figpath+'.png')
 
     writer.close()
 
@@ -140,6 +194,8 @@ def get_args():
                         help='Downscaling factor of the images')
     parser.add_argument('-v', '--validation', dest='val', type=float, default=10.0,
                         help='Percent of the data that is used as validation (0-100)')
+    parser.add_argument('-f', '--fig-path', metavar='FP', type=str, nargs='?', default='baseline',
+                        help='Fig Path', dest='figpath')
 
     return parser.parse_args()
 
