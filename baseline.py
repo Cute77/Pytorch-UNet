@@ -48,6 +48,9 @@ def train_net(net,
     net_losses = []
     acc_test = []
     acc_train = []
+    dice_train = []
+    dice_test = []
+    loss_train = []
 
     logging.info(f'''Starting training:
         Epochs:          {epochs}
@@ -92,6 +95,8 @@ def train_net(net,
                 pred = torch.sigmoid(masks_pred)
                 pred = (pred > 0.5).float()
                 tot += dice_coeff(pred, true_masks).item()
+                dice_train.append(dice_coeff(pred, true_masks).item())
+                writer.add_scalar('Dice/train', dice_coeff(pred, true_masks).item(), global_step)
 
                 loss = criterion(masks_pred, true_masks)
                 epoch_loss += loss.item()
@@ -114,6 +119,7 @@ def train_net(net,
                         writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), global_step)
                         writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), global_step)
                     val_score = eval_net(net, val_loader, device)
+                    dice_test.append(val_score)
                     tot_val += val_score
                     scheduler.step(val_score)
                     writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], global_step)
@@ -133,6 +139,8 @@ def train_net(net,
 
         print('Epoch: ', epoch)
         print('Epoch Loss: ', epoch_loss/n_train)
+        loss_train.append(epoch_loss/n_train)
+
         print('Train EpochDice: ', tot/n_train)
         acc_train.append(tot/n_train)
         writer.add_scalar('EpochDice/train', tot/n_train, epoch)
@@ -156,23 +164,38 @@ def train_net(net,
             logging.info(f'Checkpoint {epoch + 1} saved !')
     
     IPython.display.clear_output()
-    fig, axes = plt.subplots(1, 3, figsize=(13, 5))
+    fig, axes = plt.subplots(3, 2, figsize=(13, 5))
     ax1, ax2, ax3 = axes.ravel()
 
-    ax1.plot(net_losses, label='net_losses')
+    ax1.plot(net_losses, label='iteration_losses')
     ax1.set_ylabel("Losses")
     ax1.set_xlabel("Iteration")
     ax1.legend()
 
-    ax2.plot(acc_train, label='acc_train')
-    ax2.set_ylabel('Accuracy/train')
+    ax2.plot(loss_train, label='epoch_losses')
+    ax2.set_ylabel('Losses')
     ax2.set_xlabel('Epoch')
     ax2.legend()
 
-    ax3.plot(acc_test, label='acc_test')
-    ax3.set_ylabel('Accuracy/test')
+    ax3.plot(acc_train, label='dice_train_epoch')
+    ax3.set_ylabel('EpochDice/train')
     ax3.set_xlabel('Epoch')
     ax3.legend()
+
+    ax4.plot(acc_test, label='dice_test_epoch')
+    ax4.set_ylabel('EpochDice/test')
+    ax4.set_xlabel('Epoch')
+    ax4.legend()
+
+    ax5.plot(dice_train, label='dice_test_iteration')
+    ax5.set_ylabel('IterationDice/train')
+    ax5.set_xlabel('Iteration')
+    ax5.legend()
+
+    ax6.plot(dice_test, label='dice_train_iteration')
+    ax6.set_ylabel('IterationDice/test')
+    ax6.set_xlabel('Iteration')
+    ax6.legend()
 
     plt.savefig(args.figpath+'.png')
 
@@ -190,7 +213,7 @@ def get_args():
                         help='Learning rate', dest='lr')
     parser.add_argument('-f', '--load', dest='load', type=str, default=False,
                         help='Load model from a .pth file')
-    parser.add_argument('-s', '--scale', dest='scale', type=float, default=0.5,
+    parser.add_argument('-s', '--scale', dest='scale', type=float, default=1,
                         help='Downscaling factor of the images')
     parser.add_argument('-v', '--validation', dest='val', type=float, default=10.0,
                         help='Percent of the data that is used as validation (0-100)')

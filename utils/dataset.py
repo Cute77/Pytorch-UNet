@@ -24,9 +24,9 @@ class BasicDataset(Dataset):
                transforms.RandomHorizontalFlip(),
                transforms.RandomRotation(degrees=90),
                # transforms.RandomGrayscale(p=0.1),
-               transforms.RandomResizedCrop(size=224, scale=(0.3, 1.0)), 
-               # transforms.Resize([224, 224]), 
-               transforms.ToTensor(), 
+               # transforms.RandomResizedCrop(size=224, scale=(0.3, 1.0)), 
+               transforms.Resize([96, 96]), 
+               # transforms.ToTensor(), 
                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[1.0, 1.0, 1.0])
             ]) 
 
@@ -66,6 +66,9 @@ class BasicDataset(Dataset):
 
         assert img.size == mask.size, \
             f'Image and mask {idx} should be the same size, but are {img.size} and {mask.size}'
+
+        img = self.transform(img)
+        mask = self.transform(mask)
 
         img = self.preprocess(img, self.scale)
         mask = self.preprocess(mask, self.scale)
