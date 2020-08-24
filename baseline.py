@@ -165,7 +165,7 @@ def train_net(net,
     
     IPython.display.clear_output()
     fig, axes = plt.subplots(3, 2, figsize=(13, 5))
-    ax1, ax2, ax3 = axes.ravel()
+    ax1, ax2, ax3, ax4, ax5, ax6 = axes.ravel()
 
     ax1.plot(net_losses, label='iteration_losses')
     ax1.set_ylabel("Losses")
