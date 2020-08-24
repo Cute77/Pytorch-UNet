@@ -22,7 +22,7 @@ class BasicDataset(Dataset):
         logging.info(f'Creating dataset with {len(self.ids)} examples')
         self.transform = transforms.Compose([ 
                transforms.RandomHorizontalFlip(),
-               transforms.RandomRotation(degrees=180),
+               transforms.RandomRotation(degrees=90),
                # transforms.RandomGrayscale(p=0.1),
                # transforms.RandomResizedCrop(size=224, scale=(0.3, 1.0)), 
                transforms.Resize([96, 96]), 
