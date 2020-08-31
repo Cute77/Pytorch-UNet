@@ -24,8 +24,8 @@ class BasicDataset(Dataset):
                transforms.RandomHorizontalFlip(),
                transforms.RandomRotation(degrees=90),
                # transforms.RandomGrayscale(p=0.1),
-               # transforms.RandomResizedCrop(size=224, scale=(0.3, 1.0)), 
-               transforms.Resize([96, 96]), 
+               transforms.RandomResizedCrop(size=96), 
+               # transforms.Resize([96, 96]), 
                # transforms.ToTensor(), 
                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[1.0, 1.0, 1.0])
             ]) 
