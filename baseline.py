@@ -98,6 +98,10 @@ def train_net(net,
                 dice_train.append(dice_coeff(pred, true_masks).item())
                 writer.add_scalar('Dice/train', dice_coeff(pred, true_masks).item(), global_step)
 
+                if dice_coeff(pred, true_masks).item() <= 0.3:
+                    writer.add_images('masks/true', true_masks, global_step)
+                    writer.add_images('masks/pred', pred, global_step)
+
                 loss = criterion(masks_pred, true_masks)
                 epoch_loss += loss.item()
                 net_losses.append(loss.item())
@@ -132,10 +136,10 @@ def train_net(net,
                         print('Step Validation Dice: ', val_score)
                         writer.add_scalar('Dice/test', val_score, global_step)
 
-                    writer.add_images('images', imgs, global_step)
-                    if net.n_classes == 1:
-                        writer.add_images('masks/true', true_masks, global_step)
-                        writer.add_images('masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
+                    # writer.add_images('images', imgs, global_step)
+                    # if net.n_classes == 1:
+                    #     writer.add_images('masks/true', true_masks, global_step)
+                    #     writer.add_images('masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
 
         print('Epoch: ', epoch)
         print('Epoch Loss: ', epoch_loss/len(train_loader))
