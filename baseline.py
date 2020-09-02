@@ -138,12 +138,12 @@ def train_net(net,
                         writer.add_images('masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
 
         print('Epoch: ', epoch)
-        print('Epoch Loss: ', epoch_loss/n_train)
-        loss_train.append(epoch_loss/n_train)
+        print('Epoch Loss: ', epoch_loss/len(train_loader))
+        loss_train.append(epoch_loss/len(train_loader))
 
-        print('Train EpochDice: ', tot/n_train)
-        acc_train.append(tot/n_train)
-        writer.add_scalar('EpochDice/train', tot/n_train, epoch)
+        print('Train EpochDice: ', tot/len(train_loader))
+        acc_train.append(tot/len(train_loader))
+        writer.add_scalar('EpochDice/train', tot/len(train_loader), epoch)
 
         print('Val EpochDice: ', tot_val/num_val)
         acc_test.append(tot_val/num_val)
@@ -187,12 +187,12 @@ def train_net(net,
     ax4.set_xlabel('Epoch')
     ax4.legend()
 
-    ax5.plot(dice_train, label='dice_test_iteration')
+    ax5.plot(dice_train, label='dice_train_iteration')
     ax5.set_ylabel('IterationDice/train')
     ax5.set_xlabel('Iteration')
     ax5.legend()
 
-    ax6.plot(dice_test, label='dice_train_iteration')
+    ax6.plot(dice_test, label='dice_test_iteration')
     ax6.set_ylabel('IterationDice/test')
     ax6.set_xlabel('Iteration')
     ax6.legend()
