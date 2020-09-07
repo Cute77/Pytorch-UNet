@@ -22,10 +22,10 @@ class BasicDataset(Dataset):
         logging.info(f'Creating dataset with {len(self.ids)} examples')
         self.transform = transforms.Compose([ 
                # transforms.RandomHorizontalFlip(),
-               # transforms.RandomRotation(degrees=90),
+               transforms.RandomRotation(degrees=20),
                # transforms.RandomGrayscale(p=0.1),
-               # transforms.RandomResizedCrop(size=96), 
-               transforms.Resize([96, 96]), 
+               # transforms.RandomResizedCrop(scale=(0.75, 1.25), size=96), 
+               transforms.Resize([512, 512]), 
                # transforms.ToTensor(), 
                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[1.0, 1.0, 1.0])
             ]) 

@@ -51,6 +51,7 @@ def train_net(net,
     dice_train = []
     dice_test = []
     loss_train = []
+    num_batch = len(train_loader)
 
     logging.info(f'''Starting training:
         Epochs:          {epochs}
@@ -142,12 +143,12 @@ def train_net(net,
                     #     writer.add_images('masks/pred', torch.sigmoid(masks_pred) > 0.5, global_step)
 
         print('Epoch: ', epoch)
-        print('Epoch Loss: ', epoch_loss/len(train_loader))
-        loss_train.append(epoch_loss/len(train_loader))
+        print('Epoch Loss: ', epoch_loss/num_batch)
+        loss_train.append(epoch_loss/num_batch)
 
-        print('Train EpochDice: ', tot/len(train_loader))
-        acc_train.append(tot/len(train_loader))
-        writer.add_scalar('EpochDice/train', tot/len(train_loader), epoch)
+        print('Train EpochDice: ', tot/num_batch)
+        acc_train.append(tot/num_batch)
+        writer.add_scalar('EpochDice/train', tot/num_batch, epoch)
 
         print('Val EpochDice: ', tot_val/num_val)
         acc_test.append(tot_val/num_val)
