@@ -157,16 +157,6 @@ def train_net(net,
         path = dir_checkpoint + args.figpath + '_model.pth'
         # path = 'baseline/' + str(args.noise_fraction) + '/model.pth'
         torch.save(net.state_dict(), path)
-
-        if save_cp:
-            try:
-                os.mkdir(dir_checkpoint)
-                logging.info('Created checkpoint directory')
-            except OSError:
-                pass
-            torch.save(net.state_dict(),
-                       dir_checkpoint + f'CP_epoch{epoch + 1}.pth')
-            logging.info(f'Checkpoint {epoch + 1} saved !')
     
     IPython.display.clear_output()
     fig, axes = plt.subplots(3, 2, figsize=(13, 5))
@@ -205,6 +195,7 @@ def train_net(net,
     plt.savefig(args.figpath+'.png')
 
     writer.close()
+    return net
 
 
 def get_args():
@@ -258,7 +249,7 @@ if __name__ == '__main__':
     # cudnn.benchmark = True
 
     try:
-        train_net(net=net,
+        net = train_net(net=net,
                   epochs=args.epochs,
                   batch_size=args.batchsize,
                   lr=args.lr,
