@@ -53,17 +53,17 @@ class Compose(object):
         >>> ])
     """
 
-    def __init__(self, transforms):
-        self.transforms = transforms
+    def __init__(self, transform):
+        self.transform = transform
 
     def __call__(self, img):
-        for t in self.transforms:
+        for t in self.transform:
             img = t(img)
         return img
 
     def __repr__(self):
         format_string = self.__class__.__name__ + '('
-        for t in self.transforms:
+        for t in self.transform:
             format_string += '\n'
             format_string += '    {0}'.format(t)
         format_string += '\n)'
