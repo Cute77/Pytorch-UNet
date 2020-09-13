@@ -4,7 +4,7 @@ import numpy as np
 from glob import glob
 import torch
 from torch.utils.data import Dataset
-from torchvision import datasets
+from torchvision import transforms, datasets
 import transform
 import logging
 from PIL import Image
