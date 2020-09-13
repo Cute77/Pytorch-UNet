@@ -21,11 +21,11 @@ class BasicDataset(Dataset):
         self.ids = [splitext(file)[0] for file in listdir(imgs_dir)
                     if not file.startswith('.') and file.endswith('.jpg')]
         logging.info(f'Creating dataset with {len(self.ids)} examples')
-        self.transform = transforms.Compose([ 
+        self.transform = transform.Compose([ 
                # transforms.RandomHorizontalFlip(),
                # transforms.RandomRotation(degrees=20),
                # transforms.RandomGrayscale(p=0.1),
-               transforms.RandomResizedCrop(scale=(0.75, 1.25), size=512), 
+               transform.RandomResizedCrop(scale=(0.75, 1.25), size=512), 
                # transforms.Resize([512, 512]), 
                # transforms.ToTensor(), 
                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[1.0, 1.0, 1.0])
