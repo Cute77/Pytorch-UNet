@@ -11,11 +11,12 @@ from PIL import Image
 
 
 class BasicDataset(Dataset):
-    def __init__(self, imgs_dir, masks_dir, scale=1, mask_suffix='_segmentation'):
+    def __init__(self, imgs_dir, masks_dir, scale=1, size=96, mask_suffix='_segmentation'):
         self.imgs_dir = imgs_dir
         self.masks_dir = masks_dir
         self.scale = scale
         self.mask_suffix = mask_suffix
+        self.size = size
         assert 0 < scale <= 1, 'Scale must be between 0 and 1'
 
         self.ids = [splitext(file)[0] for file in listdir(imgs_dir)
@@ -25,8 +26,8 @@ class BasicDataset(Dataset):
                # transforms.RandomHorizontalFlip(),
                # transform.RandomRotation(degrees=20),
                # transforms.RandomGrayscale(p=0.1),
-               transform.RandomResizedCrop(scale=(0.75, 1.25), size=512), 
-               # transform.Resize([512, 512]), 
+               transform.RandomResizedCrop(scale=(0.75, 1.25), size=size), 
+               # transform.Resize([size, size]), 
                # transforms.ToTensor(), 
                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[1.0, 1.0, 1.0])
             ]) 
