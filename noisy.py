@@ -1,23 +1,22 @@
 from cv2 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from os import listdirf
+from os import listdir
 
-path = '...'
 noise_fraction = 0.2
+inputdir = '...'
+outputdir = inputdir + '_' + str(noise_fraction)
 
-for file in listdir(path):
-    img = cv2.imread(file)
+for filename in listdir(inputdir):
+    img = cv2.imread(filename)
     img_gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(img_gray, 127, 255, 0)
     contours, hier = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
         epsilon = noise_fraction * cv2.arcLength(cnt, True)
-        epsilon2 = 0.04 * cv2.arcLength(cnt, True)
 
-        approx1 = cv2.approxPolyDP(cnt, epsilon1, True)
-        approx2 = cv2.approxPolyDP(cnt, epsilon2, True)
+        approx = cv2.approxPolyDP(cnt, epsilon, True)
 
         # cv2.drawContours(black, [cnt], -1, (0, 255, 0), 2)
         # cv2.drawContours(black, [approx1], -1, (255, 255, 0), 2)
@@ -26,24 +25,13 @@ for file in listdir(path):
     # cv2.imwrite('00_original.jpg', img)
 
     black = cv2.cvtColor(np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
-    cv2.fillPoly(black, [approx1],(255,255,255))
-    cv2.imwrite('00_0.2.jpg', black)
-    ax2.imshow(black)
-    ax2.set_title('noise-fraction_0.2')
-
-    black = cv2.cvtColor(np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
-    cv2.fillPoly(black, [approx2], (255,255,255))
-    cv2.imwrite('00_0.4.jpg', black)
-    ax3.imshow(black)
-    ax3.set_title('noise-fractio_0.4')
+    cv2.fillPoly(black, [approx], (255,255,255))
+    path = outputdir + filename
+    cv2.imwrite(path, black)
 
 
 
-ids = [splitext(file)[0] for file in listdir(imgs_dir)
-        if not file.startswith('.') and file.endswith('.jpg')]
-
-mask_file = glob(path + idx + self.mask_suffix + '.png')
-
+'''
 img = cv2.imread('ISIC_0000000_segmentation.png')
 # img = cv2.resize(img, (512, 512))
 
@@ -77,9 +65,6 @@ ax3.imshow(black)
 ax3.set_title('noise-fractio_0.4')
 
 
-
-
-'''
 x1 = img.copy()
 epsilon1 = 50 
 approx = cv2.approxPolyDP(contours[0],epsilon,True)
