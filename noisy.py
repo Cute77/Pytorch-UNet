@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from os import listdir
 
 noise_fraction = 0.2
-inputdir = '...'
-outputdir = inputdir + '_' + str(noise_fraction)
+inputdir = 'ISIC-2017_Training_Part1_GroundTruth'
+outputdir = inputdir + '_' + str(noise_fraction) + '/'
 
 for filename in listdir(inputdir):
     img = cv2.imread(filename)
