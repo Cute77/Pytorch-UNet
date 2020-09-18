@@ -22,11 +22,6 @@ import matplotlib.pyplot as plt
 import IPython
 import gc
 
-dir_img = 'ISIC-2017_Training_Data/'
-dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
-dir_checkpoint = 'checkpoints/'
-
-
 def train_net(net,
               device,
               epochs=5,
@@ -38,6 +33,10 @@ def train_net(net,
               img_size=512, 
               noise_fraction=0):
 
+    dir_img = 'ISIC-2017_Training_Data/'
+    dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
+    dir_checkpoint = 'checkpoints/'
+    
     if noise_fraction != 0:
         dir_mask = dir_mask + '_' + str(noise_fraction) + '/'
         print(dir_mask)
