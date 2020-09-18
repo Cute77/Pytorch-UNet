@@ -23,7 +23,7 @@ import IPython
 import gc
 
 dir_img = 'ISIC-2017_Training_Data/'
-dir_mask = 'ISIC-2017_Training_Part1_GroundTruth/'
+dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
 dir_checkpoint = 'checkpoints/'
 
 
@@ -35,7 +35,15 @@ def train_net(net,
               val_percent=0.1,
               save_cp=True,
               img_scale=0.5, 
-              img_size=512):
+              img_size=512, 
+              noise_fraction=0):
+
+    if noise_fraction != 0:
+        dir_mask = dir_mask + '_' + str(noise_fraction) + '/'
+        print(dir_mask)
+    else:
+        dir_mask = dir_mask + '/'
+        print(dir_mask)
 
     dataset = BasicDataset(dir_img, dir_mask, img_scale, img_size)
     n_val = int(len(dataset) * val_percent)
@@ -215,6 +223,8 @@ def get_args():
                         help='Downscaling factor of the images')
     parser.add_argument('-s', '--size', dest='size', type=int, default=512,
                         help='Size of images')
+    parser.add_argument('-n', '--noise-fraction', metavar='NF', type=float, nargs='?', default=0.2,
+                        help='Noise Fraction', dest='noise_fraction')
     parser.add_argument('-v', '--validation', dest='val', type=float, default=10.0,
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('-p', '--fig-path', metavar='FP', type=str, nargs='?', default='baseline',
@@ -260,7 +270,8 @@ if __name__ == '__main__':
                   device=device,
                   img_scale=args.scale,
                   img_size=args.size, 
-                  val_percent=args.val / 100)
+                  val_percent=args.val/100, 
+                  noise_fraction=args.noise_fraction)
     except KeyboardInterrupt:
         torch.save(net.state_dict(), 'INTERRUPTED.pth')
         logging.info('Saved interrupt')
