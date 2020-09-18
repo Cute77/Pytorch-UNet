@@ -15,7 +15,7 @@ for filename in listdir(inputdir):
     contours, hier = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for cnt in contours:
-        epsilon = noise_fraction * cv2.arcLength(cnt, True)
+        epsilon = noise_fraction * 0.1 * cv2.arcLength(cnt, True)
 
         approx = cv2.approxPolyDP(cnt, epsilon, True)
 
