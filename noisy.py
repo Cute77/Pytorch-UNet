@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from os import listdir
 
-noise_fraction = 0.4
+noise_fraction = 0.2
 inputdir = 'ISIC-2017_Training_Part1_GroundTruth'
 outputdir = inputdir + '_' + str(noise_fraction) + '/'
 
 for filename in listdir(inputdir):
     img = cv2.imread(inputdir+'/'+filename)
-    print(filename)
+    # print(filename)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(img_gray, 127, 255, 0)
     contours, hier = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
