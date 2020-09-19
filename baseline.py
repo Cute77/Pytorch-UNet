@@ -35,6 +35,8 @@ def train_net(net,
 
     dir_img = 'ISIC-2017_Training_Data/'
     dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
+    dir_val_img = 'ISIC-2017_Training_Data_validation/'
+    dir_val_mask = 'ISIC-2017_Training_Part1_GroundTruth_validation/'
     dir_checkpoint = 'checkpoints/'
 
     if noise_fraction != 0:
@@ -44,10 +46,11 @@ def train_net(net,
         dir_mask = dir_mask + '/'
         print(dir_mask)
 
-    dataset = BasicDataset(dir_img, dir_mask, img_scale, img_size)
-    n_val = int(len(dataset) * val_percent)
-    n_train = len(dataset) - n_val
-    train, val = random_split(dataset, [n_train, n_val])
+    train = BasicDataset(dir_img, dir_mask, img_scale, img_size)
+    val = BasicDataset(dir_val_img, dir_val_mask, img_scale, img_size)
+    # n_val = int(len(dataset) * val_percent)
+    # n_train = len(dataset) - n_val
+    # train, val = random_split(dataset, [n_train, n_val])
     train_loader = DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
     val_loader = DataLoader(val, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory=True, drop_last=True)
 
