@@ -16,7 +16,6 @@ for filename in listdir(inputdir):
 
     for cnt in contours:
         epsilon = noise_fraction * 0.1 * cv2.arcLength(cnt, True)
-
         approx = cv2.approxPolyDP(cnt, epsilon, True)
 
         # cv2.drawContours(black, [cnt], -1, (0, 255, 0), 2)
@@ -25,8 +24,11 @@ for filename in listdir(inputdir):
 
     # cv2.imwrite('00_original.jpg', img)
 
-    black = cv2.cvtColor(np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
-    cv2.fillPoly(black, [approx], (255, 255, 255))
+    # black = cv2.cvtColor(np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
+    # cv2.fillPoly(black, [approx], (255, 255, 255))
+    black = np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8)
+    cv2.fillPoly(black, [approx], 255)
+    black = cv2.cvtColor(black, cv2.COLOR_GRAY2BGR)
     path = outputdir + filename
     cv2.imwrite(path, black)
 

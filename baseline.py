@@ -106,16 +106,16 @@ def train_net(net,
                 pred = torch.sigmoid(masks_pred)
                 pred = (pred > 0.5).float()
                 print(pred.size())
-                print(true_masks[:, 0, :, :].size())
-                tot += dice_coeff(pred, true_masks[:, 0]).item()
-                dice_train.append(dice_coeff(pred, true_masks[:, 0]).item())
-                writer.add_scalar('Dice/train', dice_coeff(pred, true_masks[:, 0]).item(), global_step)
+                print(true_masks.size())
+                tot += dice_coeff(pred, true_masks).item()
+                dice_train.append(dice_coeff(pred, true_masks).item())
+                writer.add_scalar('Dice/train', dice_coeff(pred, true_masks).item(), global_step)
 
-                if dice_coeff(pred, true_masks[:, 0]).item() <= 0.3:
-                    writer.add_images('masks/true', true_masks[:, 0], global_step)
+                if dice_coeff(pred, true_masks).item() <= 0.3:
+                    writer.add_images('masks/true', true_masks, global_step)
                     writer.add_images('masks/pred', pred, global_step)
 
-                loss = criterion(masks_pred, true_masks[:, 0])
+                loss = criterion(masks_pred, true_masks)
                 epoch_loss += loss.item()
                 net_losses.append(loss.item())
                 writer.add_scalar('Loss/train', loss.item(), global_step)
