@@ -91,7 +91,7 @@ def train_net(net,
         num_val = 0
         tot_val = 0
         epoch_loss = 0
-        with tqdm(total=n_train, desc=f'Epoch {epoch + 1}/{epochs}', unit='img') as pbar:
+        with tqdm(total=len(train), desc=f'Epoch {epoch + 1}/{epochs}', unit='img') as pbar:
             for batch in train_loader:
                 imgs = batch['image']
                 true_masks = batch['mask']
@@ -132,7 +132,7 @@ def train_net(net,
 
                 pbar.update(imgs.shape[0])
                 global_step += 1
-                if global_step % (n_train // (10 * batch_size)) == 0:
+                if global_step % (len(train) // (10 * batch_size)) == 0:
                     num_val += 1
                     for tag, value in net.named_parameters():
                         tag = tag.replace('.', '/')
