@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from os import listdir
 
-noise_fraction = 0.2
+noise_fraction = 0.4
 inputdir = 'ISIC-2017_Training_Part1_GroundTruth'
 outputdir = inputdir + '_' + str(noise_fraction) + '/'
 
