@@ -11,13 +11,15 @@ for filename in listdir(dirname):
 
 random.shuffle(name)
 
-offset = len(name) * 0.1
+offset = int(len(name) * 0.1)
 data = name[:offset]
 
 for line in data:
     src = dirname + '/' + line
+    print(src)
     dst = path + '/' + line
+    print(dst)
     shutil.move(src, dst)
-    
+
 
 
