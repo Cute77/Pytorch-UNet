@@ -22,11 +22,11 @@ def eval_net(net, loader, device):
                 mask_pred = net(imgs)
 
             if net.n_classes > 1:
-                tot += F.cross_entropy(mask_pred, true_masks).item()
+                tot += F.cross_entropy(mask_pred, true_masks[:, 0:1]).item()
             else:
                 pred = torch.sigmoid(mask_pred)
                 pred = (pred > 0.5).float()
-                tot += dice_coeff(pred, true_masks).item()
+                tot += dice_coeff(pred, true_masks[:, 0:1]).item()
             pbar.update()
 
     net.train()
