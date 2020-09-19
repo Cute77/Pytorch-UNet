@@ -36,7 +36,7 @@ def train_net(net,
     dir_img = 'ISIC-2017_Training_Data/'
     dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
     dir_checkpoint = 'checkpoints/'
-    
+
     if noise_fraction != 0:
         dir_mask = dir_mask + '_' + str(noise_fraction) + '/'
         print(dir_mask)
@@ -71,6 +71,7 @@ def train_net(net,
         Device:          {device.type}
         Images scaling:  {img_scale}
         Images size:     {img_size}
+        Noise fraction:  {noise_fraction}
     ''')
 
     # optimizer = optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-8, momentum=0.9)
@@ -104,6 +105,8 @@ def train_net(net,
 
                 pred = torch.sigmoid(masks_pred)
                 pred = (pred > 0.5).float()
+                print(pred.size())
+                print(true_masks.size())
                 tot += dice_coeff(pred, true_masks).item()
                 dice_train.append(dice_coeff(pred, true_masks).item())
                 writer.add_scalar('Dice/train', dice_coeff(pred, true_masks).item(), global_step)
