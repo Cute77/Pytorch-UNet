@@ -19,7 +19,7 @@ for cnt in contours:
 # cv2.fillPoly(black, [approx], (255, 255, 255))
 black = np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8)
 cv2.fillPoly(black, [approx], 255)
-black = cv2.cvtColor(black, cv2.COLOR_GRAY2BGR)
+# black = cv2.cvtColor(black, cv2.COLOR_GRAY2BGR)
 print(black.shape)
 output = str(noise_fraction) + '_' + path
 cv2.imwrite(output, black)
