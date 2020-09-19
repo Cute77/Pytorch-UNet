@@ -106,7 +106,7 @@ def train_net(net,
                 pred = torch.sigmoid(masks_pred)
                 pred = (pred > 0.5).float()
                 print(pred.size())
-                print(true_masks[:, 0].size())
+                print(true_masks[:, 0, :, :].size())
                 tot += dice_coeff(pred, true_masks[:, 0]).item()
                 dice_train.append(dice_coeff(pred, true_masks[:, 0]).item())
                 writer.add_scalar('Dice/train', dice_coeff(pred, true_masks[:, 0]).item(), global_step)
