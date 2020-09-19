@@ -68,8 +68,8 @@ def train_net(net,
         Epochs:          {epochs}
         Batch size:      {batch_size}
         Learning rate:   {lr}
-        Training size:   {n_train}
-        Validation size: {n_val}
+        Training size:   {len(train)}
+        Validation size: {len(val)}
         Checkpoints:     {save_cp}
         Device:          {device.type}
         Images scaling:  {img_scale}
