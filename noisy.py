@@ -26,7 +26,7 @@ for filename in listdir(inputdir):
     # cv2.imwrite('00_original.jpg', img)
 
     black = cv2.cvtColor(np.zeros((int(img.shape[0]), int(img.shape[1])), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
-    cv2.fillPoly(black, [approx], (255,255,255))
+    cv2.fillPoly(black, [approx], (255, 255, 255))
     path = outputdir + filename
     cv2.imwrite(path, black)
 
