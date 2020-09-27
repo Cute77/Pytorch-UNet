@@ -38,6 +38,8 @@ def train_net(net,
     dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
     dir_val_img = 'ISIC-2017_Training_Data_validation/'
     dir_val_mask = 'ISIC-2017_Training_Part1_GroundTruth_validation/'
+    dir_clean_img = 'ISIC-2017_Training_Data_clean/'
+    dir_clean_mask = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean/'
     dir_checkpoint = 'checkpoints/'
 
     if noise_fraction != 0:
@@ -49,7 +51,7 @@ def train_net(net,
 
     train = BasicDataset(dir_img, dir_mask, img_scale, img_size)
     val = BasicDataset(dir_val_img, dir_val_mask, img_scale, img_size)
-    clean = BasicDataset(dir_img, dir_mask, img_scale, img_size)
+    clean = BasicDataset(dir_clean_img, dir_clean_mask, img_scale, img_size)
     # n_val = int(len(dataset) * val_percent)
     # n_train = len(dataset) - n_val
     # train, val = random_split(dataset, [n_train, n_val])
@@ -161,6 +163,7 @@ def train_net(net,
 
                 pbar.update(imgs.shape[0])
                 global_step += 1
+                
                 if global_step % (len(train) // (10 * batch_size)) == 0:
                     num_val += 1
                     for tag, value in net.named_parameters():
