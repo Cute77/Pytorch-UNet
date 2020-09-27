@@ -12,6 +12,8 @@ from PIL import Image
 
 class BasicDataset(Dataset):
     def __init__(self, imgs_dir, masks_dir, scale=1, size=96, mask_suffix='_segmentation'):
+        print(imgs_dir)
+        print(masks_dir)
         self.imgs_dir = imgs_dir
         self.masks_dir = masks_dir
         self.scale = scale
