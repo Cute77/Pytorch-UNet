@@ -119,7 +119,7 @@ def train_net(net,
                 mask_type = torch.float32 if net.n_classes == 1 else torch.long
                 true_masks = true_masks.to(device=device, dtype=mask_type)
 
-                with higher.innrtloop_ctx(net, optimizer) as (meta_net, meta_opt):
+                with higher.innerloop_ctx(net, optimizer) as (meta_net, meta_opt):
                     y_f_hat = meta_net(imgs)
                     loss = criterion(y_f_hat, true_masks)
                     eps = torch.zeros(cost.size()).cuda()
