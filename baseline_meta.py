@@ -259,7 +259,7 @@ def get_args():
                         help='Batch size', dest='batchsize')
     parser.add_argument('-l', '--learning-rate', metavar='LR', type=float, nargs='?', default=0.0001,
                         help='Learning rate', dest='lr')
-    parser.add_argument('-f', '--load', dest='load', type=str, default=False,
+    parser.add_argument('-f', '--load', dest='load', type=int, default=0,
                         help='Load model from a .pth file')
     parser.add_argument('-c', '--scale', dest='scale', type=float, default=1,
                         help='Downscaling factor of the images')
@@ -271,8 +271,6 @@ def get_args():
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('-p', '--fig-path', metavar='FP', type=str, nargs='?', default='baseline',
                         help='Fig Path', dest='figpath')
-    parser.add_argument('-o', '--load', dest='load', type=int, default=0,
-                        help='Size of images')
 
     return parser.parse_args()
 
