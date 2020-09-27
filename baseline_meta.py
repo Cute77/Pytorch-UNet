@@ -38,8 +38,8 @@ def train_net(net,
     dir_mask = 'ISIC-2017_Training_Part1_GroundTruth'
     dir_val_img = 'ISIC-2017_Training_Data_validation/'
     dir_val_mask = 'ISIC-2017_Training_Part1_GroundTruth_validation/'
-    dir_clean_img = 'ISIC-2017_Training_Data_clean/'
-    dir_clean_mask = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean/'
+    dir_cle_img = 'ISIC-2017_Training_Data_clean/'
+    dir_cle_mask = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean/'
     dir_checkpoint = 'checkpoints/'
 
     if noise_fraction != 0:
@@ -51,17 +51,21 @@ def train_net(net,
 
     train = BasicDataset(dir_img, dir_mask, img_scale, img_size)
     val = BasicDataset(dir_val_img, dir_val_mask, img_scale, img_size)
-    clean = BasicDataset(dir_clean_img, dir_clean_mask, img_scale, img_size)
+    cle = BasicDataset(dir_cle_img, dir_cle_mask, img_scale, img_size)
     # n_val = int(len(dataset) * val_percent)
     # n_train = len(dataset) - n_val
     # train, val = random_split(dataset, [n_train, n_val])
     train_loader = DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
     val_loader = DataLoader(val, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory=True, drop_last=True)
-    clean_loader = DataLoader(clean, batch_size=5, shuffle=False, num_workers=8, pin_memory=True)
+    cle_loader = DataLoader(cle, batch_size=5, shuffle=False, num_workers=8, pin_memory=True)
 
-    clean_data, clean_labels = next(iter(clean_loader))
-    clean_data = clean_data.cuda()
-    clean_labels = clean_labels.cuda()
+    batch = next(iter(cle_loader))
+    clean_data = batch['image']
+    clean_labels = batch['mask']
+    clean_data = clean_data.to(device=device, dtype=torch.float32)
+    clean_labels = clean_labels.to(device=device, dtype=torch.float32)
+    # clean_data = clean_data.cuda()
+    # clean_labels = clean_labels.cuda()
 
     writer = SummaryWriter(comment=f'LR_{lr}_BS_{batch_size}_SCALE_{img_scale}')
     global_step = 0
@@ -163,7 +167,7 @@ def train_net(net,
 
                 pbar.update(imgs.shape[0])
                 global_step += 1
-                
+
                 if global_step % (len(train) // (10 * batch_size)) == 0:
                     num_val += 1
                     for tag, value in net.named_parameters():
