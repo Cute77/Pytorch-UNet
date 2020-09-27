@@ -13,7 +13,7 @@ outputpath = 'ISIC-2017_Training_Data_clean'
 name = []
 
 for filename in listdir(inputpath):
-    line = 'ISIC_' + filename.split('_')[1] + '.jpg'
+    # line = 'ISIC_' + filename.split('_')[1] + '.jpg'
     name.append(line)
 
 namefinal = name[:5]
