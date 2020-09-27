@@ -16,7 +16,7 @@ name = []
 
 for filename in listdir(dirname):
     line = 'ISIC_' + filename.split('_')[1] + '_segmentation.png'
-    name.append(filename)
+    name.append(line)
 
 # namefinal = name[:5]
 
