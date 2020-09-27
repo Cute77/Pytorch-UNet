@@ -7,6 +7,9 @@ import random
 # dirname = 'ISIC-2017_Training_Part1_GroundTruth_validation'
 inputpath = 'ISIC-2017_Training_Data_validation'
 outputpath = 'ISIC-2017_Training_Data_clean'
+# inputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation'
+# outputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean'
+
 name = []
 
 for filename in listdir(inputpath):
