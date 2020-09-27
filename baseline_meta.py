@@ -121,14 +121,14 @@ def train_net(net,
 
                 with higher.innerloop_ctx(net, optimizer) as (meta_net, meta_opt):
                     y_f_hat = meta_net(imgs)
-                    loss = criterion(y_f_hat, true_masks)
+                    loss = criterion(y_f_hat, true_masks[:, 0:1])
                     eps = torch.zeros(cost.size()).cuda()
                     eps = eps.requires_grad_()
                     l_f_meta = torch.sum(cost * eps)
                     meta_opt.step(l_f_meta)
 
                     y_g_hat = meta_net(clean_data)
-                    l_g_meta = torch.mean(criterion(y_g_hat, clean_labels))
+                    l_g_meta = torch.mean(criterion(y_g_hat, clean_labels[:, 0:1]))
                     grad_eps = torch.autograd.grad(l_g_meta, eps, only_inputs=True, allow_unused=True)[0].detach()
 
                 w_tild = torch.clamp(-grad_eps, min=0)
