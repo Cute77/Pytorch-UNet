@@ -289,7 +289,7 @@ if __name__ == '__main__':
     #   - For N > 2 classes, use n_classes=N
     # net = UNet(n_channels=3, n_classes=1, bilinear=True)
     net = torch.hub.load('milesial/Pytorch-UNet', 'unet_carvana')
-    path = dir_checkpoint + args.figpath + '_' + str(load) + '_model.pth'
+    path = 'checkpoints/' + args.figpath + '_' + str(args.load) + '_model.pth'
     if os.path.isfile(path):
         logging.info(f'''Continue''')
         net.load_state_dict(torch.load(path))
