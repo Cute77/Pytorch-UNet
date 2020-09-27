@@ -20,7 +20,7 @@ namefinal = name[:5]
 # data = name[:offset]
 
 for line in namefinal:
-    src = intputpath + '/' + line
+    src = inputpath + '/' + line
     print(src)
     dst = outputpath + '/' + line
     print(dst)
