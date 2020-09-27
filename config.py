@@ -14,7 +14,7 @@ name = []
 
 for filename in listdir(inputpath):
     # line = 'ISIC_' + filename.split('_')[1] + '.jpg'
-    name.append(line)
+    name.append(filename)
 
 namefinal = name[:5]
 
