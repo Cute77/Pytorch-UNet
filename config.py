@@ -6,17 +6,16 @@ import random
 # outputpath = 'ISIC-2017_Training_Data_validation'
 # dirname = 'ISIC-2017_Training_Part1_GroundTruth_validation'
 # inputpath = 'ISIC-2017_Training_Data_validation'
-# outputpath = 'ISIC-2017_Training_Data_clean'
-# inputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation'
-# outputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean'
+dirname = 'ISIC-2017_Training_Data_clean'
+inputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation'
+outputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean'
 
-inputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean'
-outputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation'
+
 
 name = []
 
-for filename in listdir(inputpath):
-    # line = 'ISIC_' + filename.split('_')[1] + '.jpg'
+for filename in listdir(dirname):
+    line = 'ISIC_' + filename.split('_')[1] + '_segmentation.png'
     name.append(filename)
 
 # namefinal = name[:5]
