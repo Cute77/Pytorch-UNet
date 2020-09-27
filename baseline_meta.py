@@ -25,6 +25,7 @@ import higher
 
 def train_net(net,
               device,
+              figpath,
               epochs=5,
               batch_size=1,
               lr=0.001,
@@ -205,7 +206,7 @@ def train_net(net,
         acc_test.append(tot_val/num_val)
         writer.add_scalar('EpochDice/test', tot_val/num_val, epoch)
         
-        path = dir_checkpoint + args.figpath + '_model.pth'
+        path = dir_checkpoint + figpath + '_' + str(epoch) + '_model.pth'
         # path = 'baseline/' + str(args.noise_fraction) + '/model.pth'
         torch.save(net.state_dict(), path)
     
@@ -270,6 +271,8 @@ def get_args():
                         help='Percent of the data that is used as validation (0-100)')
     parser.add_argument('-p', '--fig-path', metavar='FP', type=str, nargs='?', default='baseline',
                         help='Fig Path', dest='figpath')
+    parser.add_argument('-o', '--load', dest='load', type=int, default=0,
+                        help='Size of images')
 
     return parser.parse_args()
 
@@ -288,6 +291,10 @@ if __name__ == '__main__':
     #   - For N > 2 classes, use n_classes=N
     # net = UNet(n_channels=3, n_classes=1, bilinear=True)
     net = torch.hub.load('milesial/Pytorch-UNet', 'unet_carvana')
+    path = dir_checkpoint + args.figpath + '_' + str(load) + '_model.pth'
+    if os.path.isfile(path):
+        logging.info(f'''Continue''')
+        net.load_state_dict(torch.load(path))
     logging.info(f'Network:\n'
                  f'\t{net.n_channels} input channels\n'
                  f'\t{net.n_classes} output channels (classes)\n'
@@ -307,6 +314,7 @@ if __name__ == '__main__':
         net = train_net(net=net,
                   epochs=args.epochs,
                   batch_size=args.batchsize,
+                  figpath = args.figpath, 
                   lr=args.lr,
                   device=device,
                   img_scale=args.scale,
