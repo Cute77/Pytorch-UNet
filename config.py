@@ -15,7 +15,7 @@ outputpath = 'ISIC-2017_Training_Part1_GroundTruth_validation_clean'
 name = []
 
 for filename in listdir(dirname):
-    line = 'ISIC_' + filename.split('_')[1] + '_segmentation.png'
+    line = filename.split('.')[0] + '_segmentation.png'
     name.append(line)
 
 # namefinal = name[:5]
